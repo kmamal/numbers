@@ -6,10 +6,31 @@
     "type": "git",
     "url": "git@github.com:kmamal/numbers.git"
   },
-  "main": "src/index.js",
   "scripts": {
-    "test": "./scripts/run-tests.sh",
     "update-exports": "./scripts/update-exports.sh"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@kmamal/util": "^0.0.92"
+  },
+  "exports": {
+    "./integer": "./src/integer/index.js",
+    "./js": "./src/js/index.js",
+    "./decimal/base2": "./src/decimal/base2/index.js",
+    "./decimal/base10": "./src/decimal/base10/index.js",
+    "./rational/base": "./src/rational/base.js",
+    "./rational": "./src/rational/index.js",
+    "./rational/inverse-sqrt/newton": "./src/rational/inverse-sqrt/newton.js",
+    "./rational/inverse-sqrt/via-number": "./src/rational/inverse-sqrt/via-number.js",
+    "./rational/inverse-sqrt/via-sqrt": "./src/rational/inverse-sqrt/via-sqrt.js",
+    "./rational/sqrt/newton": "./src/rational/sqrt/newton.js",
+    "./rational/sqrt/via-number": "./src/rational/sqrt/via-number.js",
+    "./rational/sqrt/via-inverse-sqrt": "./src/rational/sqrt/via-inverse-sqrt.js",
+    "./rational/sqrt/first-approximation/identity": "./src/rational/sqrt/first-approximation/identity.js",
+    "./rational/sqrt/first-approximation/scalar": "./src/rational/sqrt/first-approximation/scalar.js",
+    "./rational/sqrt/first-approximation/one": "./src/rational/sqrt/first-approximation/one.js",
+    "./rational/trig/via-number": "./src/rational/trig/via-number.js",
+    "./rational/trig/cordic": "./src/rational/trig/cordic.js",
+    "./edge-cases": "./src/edge-cases.js"
+  }
 }
