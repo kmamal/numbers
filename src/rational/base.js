@@ -1,5 +1,5 @@
 const I = require('../integer')
-const { defineFor } = require('../../gcd')
+const { defineFor } = require('@kmamal/math/gcd')
 const gcd = defineFor(I)
 const Float = require('@kmamal/util/ieee-float/double')
 
