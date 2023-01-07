@@ -9,6 +9,8 @@ const P_INFINITY = Symbol("Infinity (Rational)")
 const N_INFINITY = Symbol("-Infinity (Rational)")
 const NAN = Symbol("NaN (Rational)")
 
+const PATTERN = /^(?<snum>-?\d+)\/(?<sden>\d+)$/u
+
 const _copy = (dst, src) => {
 	dst.num = src.num
 	dst.den = src.den
@@ -367,7 +369,7 @@ const fromString = (s) => {
 	const x = ec.fromString(s)
 	if (x !== undefined) { return x }
 
-	const match = s.match(/^(?<snum>-?\d+)\/(?<sden>\d+)$/u)
+	const match = s.match(PATTERN)
 	if (!match) { return NAN }
 
 	const { snum, sden } = match.groups

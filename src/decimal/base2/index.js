@@ -200,6 +200,10 @@ const toString = (x) => {
 }
 
 module.exports = {
+	__info: {
+		name: 'decimal',
+		isPrimitive: false,
+	},
 	...{ PInfinity: P_INFINITY, NInfinity: N_INFINITY, NaN: NAN },
 	...{ isFinite, isNaN },
 	...{ sign, abs, neg, add, sub, mul, pow, square },

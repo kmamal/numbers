@@ -24,6 +24,10 @@ const fromNumber = identity
 const toNumber = identity
 
 module.exports = {
+	__info: {
+		name: 'js',
+		isPrimitive: true,
+	},
 	...{ PInfinity: Infinity, NInfinity: -Infinity, NaN },
 	...{ isMember, isNaN, isFinite },
 	...arithmeticOrerators,

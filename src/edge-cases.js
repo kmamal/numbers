@@ -1,6 +1,5 @@
 const { memoize } = require('@kmamal/util/function/memoize')
 
-
 const defineFor = memoize((D) => {
 	const {
 		PInfinity: P_INFINITY,

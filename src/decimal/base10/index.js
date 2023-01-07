@@ -459,6 +459,10 @@ const { defineFor: defineEdgeCasesFor } = require('../edge-cases')
 const ec = defineEdgeCasesFor(Domain)
 
 module.exports = {
+	__info: {
+		name: 'decimal',
+		isPrimitive: false,
+	},
 	...Domain,
 	isFinite: ec.isFinite,
 	isNaN: ec.isNaN,

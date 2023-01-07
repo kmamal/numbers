@@ -44,4 +44,4 @@ const recurse = async (dirPath) => {
 }
 
 await recurse('.')
-await Fs.writeFile('package.json', JSON.stringify(pkg, null, 2))
+await Fs.writeFile('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
