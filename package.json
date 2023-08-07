@@ -6,13 +6,17 @@
     "type": "git",
     "url": "git@github.com:kmamal/numbers.git"
   },
+  "license": "MIT",
   "scripts": {
+    "test": "npx @kmamal/testing",
     "update-exports": "node ./scripts/update-exports.mjs"
   },
-  "license": "MIT",
   "dependencies": {
     "@kmamal/math": "^0.1.1",
-    "@kmamal/util": "^0.1.6"
+    "@kmamal/util": "^0.1.13"
+  },
+  "devDependencies": {
+    "@kmamal/testing": "^0.0.24"
   },
   "exports": {
     "./integer": "./src/integer/index.js",

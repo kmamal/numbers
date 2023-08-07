@@ -30,14 +30,11 @@ const recurse = async (dirPath) => {
 			) { continue }
 
 			const filePath = `./${Path.join(dirPath, entry.name)}`
-			if (filePath === './src/index.js') {
-				pkg.main = filePath
-				continue
-			}
 
-			const key = `./${filePath.endsWith('/index.js')
-				? filePath.slice(6, -9)
-				: filePath.slice(6, -3)}`
+			const key = filePath === './src/index.js' ? '.'
+				: `./${filePath.endsWith('/index.js')
+					? filePath.slice(6, -9)
+					: filePath.slice(6, -3)}`
 			pkg.exports[key] = filePath
 		}
 	}
