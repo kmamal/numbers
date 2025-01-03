@@ -1,5 +1,5 @@
-const arithmeticOrerators = require('@kmamal/util/operators/arithmetic')
-const comparisonOrerators = require('@kmamal/util/operators/comparison')
+const arithmeticOperators = require('@kmamal/util/operators/arithmetic')
+const comparisonOperators = require('@kmamal/util/operators/comparison')
 const { identity } = require('@kmamal/util/function/identity')
 
 const isMember = (a) => typeof a === 'number'
@@ -30,10 +30,10 @@ module.exports = {
 	},
 	...{ PInfinity: Infinity, NInfinity: -Infinity, NaN },
 	...{ isMember, isNaN, isFinite },
-	...arithmeticOrerators,
+	...arithmeticOperators,
 	...{ inverse, square, inverseSqrt },
 	...M,
-	...comparisonOrerators,
+	...comparisonOperators,
 	...{ fromNumber, toNumber },
 	...{ fromString, toString },
 }

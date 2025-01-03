@@ -1,4 +1,4 @@
-const I = require('../integer')
+const I = require('../../integer')
 const Float = require('@kmamal/util/ieee-float/double')
 
 const MAX_SAFE_MANTISSA = (1n << 53n) - 1n

@@ -12,11 +12,11 @@
     "update-exports": "node ./scripts/update-exports.mjs"
   },
   "dependencies": {
-    "@kmamal/math": "^0.1.1",
-    "@kmamal/util": "^0.1.13"
+    "@kmamal/math": "^0.1.4",
+    "@kmamal/util": "^0.2.20"
   },
   "devDependencies": {
-    "@kmamal/testing": "^0.0.24"
+    "@kmamal/testing": "^0.0.30"
   },
   "exports": {
     "./integer": "./src/integer/index.js",

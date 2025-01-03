@@ -265,8 +265,8 @@ const neq = (a, b) => !eq(a, b)
 const _lt = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
-	const aScale = a.exp - a.len
-	const bScale = b.exp - b.len
+	const aScale = a.exp + a.len
+	const bScale = b.exp + b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
 	return a.man < b.man
@@ -276,8 +276,8 @@ const lt = (a, b) => ec.lt(a, b) ?? _lt(a, b)
 const _gt = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
-	const aScale = a.exp - a.len
-	const bScale = b.exp - b.len
+	const aScale = a.exp + a.len
+	const bScale = b.exp + b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
 	return a.man > b.man
@@ -287,8 +287,8 @@ const gt = (a, b) => lt(b, a)
 const _lte = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
-	const aScale = a.exp - a.len
-	const bScale = b.exp - b.len
+	const aScale = a.exp + a.len
+	const bScale = b.exp + b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
 	return a.man <= b.man
@@ -298,8 +298,8 @@ const lte = (a, b) => ec.lte(a, b) ?? _lte(a, b)
 const _gte = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
-	const aScale = a.exp - a.len
-	const bScale = b.exp - b.len
+	const aScale = a.exp + a.len
+	const bScale = b.exp + b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
 	return a.man >= b.man
