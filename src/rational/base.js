@@ -224,19 +224,19 @@ const eq = (a, b) => ec.eq(a, b) ?? _eq(a, b)
 const _neq = (a, b) => false
 	|| a.num !== b.num
 	|| a.den !== b.den
-const neq = (a, b) => !eq(a, b)
+const neq = (a, b) => ec.neq(a, b) ?? _neq(a, b)
 
 const _lt = (a, b) => a.num * b.den < b.num * a.den
 const lt = (a, b) => ec.lt(a, b) ?? _lt(a, b)
 
 const _gt = (a, b) => a.num * b.den > b.num * a.den
-const gt = (a, b) => lt(b, a)
+const gt = (a, b) => ec.gt(a, b) ?? _gt(a, b)
 
 const _lte = (a, b) => a.num * b.den <= b.num * a.den
 const lte = (a, b) => ec.lte(a, b) ?? _lte(a, b)
 
 const _gte = (a, b) => a.num * b.den >= b.num * a.den
-const gte = (a, b) => lte(b, a)
+const gte = (a, b) => ec.gte(a, b) ?? _gte(a, b)
 
 const _minTo = (dst, a, b) => {
 	const m = lte(a, b) ? a : b

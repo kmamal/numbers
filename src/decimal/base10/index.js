@@ -29,7 +29,7 @@ const _signTo = (dst, x) => {
 	const man = I._sign(x.man)
 	dst.man = man
 	if (man === 0n) {
-		dst.len = 1n
+		dst.len = 0n
 		dst.exp = 0n
 	} else {
 		dst.len = 1n
@@ -232,7 +232,7 @@ const int = (x) => ec.int(x) ?? _int(x)
 const _fracTo = (dst, x) => {
 	if (x.exp >= 0n) {
 		dst.man = 0n
-		dst.len = 1n
+		dst.len = 0n
 		dst.exp = 0n
 		return
 	}
@@ -260,51 +260,71 @@ const eq = (a, b) => ec.eq(a, b) ?? _eq(a, b)
 const _neq = (a, b) => false
 	|| a.man !== b.man
 	|| a.exp !== b.exp
-const neq = (a, b) => !eq(a, b)
+const neq = (a, b) => ec.neq(a, b) ?? _neq(a, b)
 
 const _lt = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
+	if (a.man === 0n && b.man > 0n) { return true }
+	if (b.man === 0n && a.man > 0n) { return false }
 	const aScale = a.exp + a.len
 	const bScale = b.exp + b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
-	return a.man < b.man
+	const shifts = a.exp - b.exp
+	return shifts > 0n
+		? a.man * 10n ** shifts < b.man
+		: a.man < b.man * 10n ** -shifts
 }
 const lt = (a, b) => ec.lt(a, b) ?? _lt(a, b)
 
 const _gt = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
+	if (a.man === 0n && b.man > 0n) { return false }
+	if (b.man === 0n && a.man > 0n) { return true }
 	const aScale = a.exp + a.len
 	const bScale = b.exp + b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
-	return a.man > b.man
+	const shifts = a.exp - b.exp
+	return shifts > 0n
+		? a.man * 10n ** shifts > b.man
+		: a.man > b.man * 10n ** -shifts
 }
-const gt = (a, b) => lt(b, a)
+const gt = (a, b) => ec.gt(a, b) ?? _gt(a, b)
 
 const _lte = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
+	if (a.man === 0n) { return true }
+	if (b.man === 0n) { return false }
 	const aScale = a.exp + a.len
 	const bScale = b.exp + b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
-	return a.man <= b.man
+	const shifts = a.exp - b.exp
+	return shifts > 0n
+		? a.man * 10n ** shifts <= b.man
+		: a.man <= b.man * 10n ** -shifts
 }
 const lte = (a, b) => ec.lte(a, b) ?? _lte(a, b)
 
 const _gte = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
+	if (a.man === 0n) { return false }
+	if (b.man === 0n) { return true }
 	const aScale = a.exp + a.len
 	const bScale = b.exp + b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
-	return a.man >= b.man
+	const shifts = a.exp - b.exp
+	return shifts > 0n
+		? a.man * 10n ** shifts >= b.man
+		: a.man >= b.man * 10n ** -shifts
 }
-const gte = (a, b) => lte(b, a)
+const gte = (a, b) => ec.gte(a, b) ?? _gte(a, b)
 
 const _minTo = (dst, a, b) => {
 	const m = lte(a, b) ? a : b
@@ -335,16 +355,19 @@ const max = (a, b) => ec.max(a, b) ?? _max(a, b)
 const _fromScientificTo = (dst, _man, _exp) => {
 	let man = _man
 	let exp = _exp
+	let len
 	if (man === 0n) {
 		exp = 0n
+		len = 0n
 	} else {
 		while ((man % 10n) === 0n) {
 			man /= 10n
 			exp += 1n
 		}
+		len = BigInt(I._abs(man).toString().length)
 	}
 	dst.man = man
-	dst.len = BigInt(I._abs(man).toString().length)
+	dst.len = len
 	dst.exp = exp
 }
 const _fromScientific = (man, exp) => {

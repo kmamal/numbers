@@ -172,6 +172,8 @@ const defineFor = memoize((D) => {
 		if (a === NAN && b === NAN) { return false }
 	}
 
+	const neq = eq
+
 	const lt = (a, b) => {
 		if (a === NAN || b === NAN) { return false }
 		if (a === P_INFINITY) { return false }
@@ -180,6 +182,8 @@ const defineFor = memoize((D) => {
 		if (b === N_INFINITY) { return false }
 	}
 
+	const gt = (a, b) => lt(b, a)
+
 	const lte = (a, b) => {
 		if (a === NAN || b === NAN) { return false }
 		if (a === P_INFINITY) { return false }
@@ -187,6 +191,8 @@ const defineFor = memoize((D) => {
 		if (b === P_INFINITY) { return true }
 		if (b === N_INFINITY) { return false }
 	}
+
+	const gte = (a, b) => lte(b, a)
 
 	const min = (a, b) => {
 		if (a === NAN || b === NAN) { return NAN }
@@ -251,7 +257,7 @@ const defineFor = memoize((D) => {
 		...{ isMember },
 		...{ sign, neg, abs },
 		...{ add, sub, mul, div, mod, inverse, pow },
-		...{ eq, lt, lte, min, max },
+		...{ eq, neq, lt, lte, gt, gte, min, max },
 		...{ floor, ceil, round, int, frac },
 		...{ fromString, toString },
 		...{ fromNumber, toNumber },
