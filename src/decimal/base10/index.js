@@ -1,19 +1,19 @@
-const I = require('../integer')
+const I = require('../../integer')
 
 const P_INFINITY = Symbol("Infinity (Decimal)")
 const N_INFINITY = Symbol("-Infinity (Decimal)")
 const NAN = Symbol("NaN (Decimal)")
 
-const ONE = { man: 1n, str: '1', exp: 0n }
+const ONE = { man: 1n, len: 1n, exp: 0n }
 
 const _copy = (dst, src) => {
 	dst.man = src.man
-	dst.str = src.str
+	dst.len = src.len
 	dst.exp = src.exp
 }
 const _clone = (x) => ({
 	man: x.man,
-	str: x.str,
+	str: x.len,
 	exp: x.exp,
 })
 
@@ -21,7 +21,7 @@ const _isMember = (x) => true
 	&& x
 	&& typeof x === 'object'
 	&& I.isMember(x.man)
-	&& typeof x.str === 'string'
+	&& I.isMember(x.len)
 	&& I.isMember(x.exp)
 const isMember = (x) => ec.isMember(x) ?? _isMember(x)
 
@@ -29,10 +29,10 @@ const _signTo = (dst, x) => {
 	const man = I._sign(x.man)
 	dst.man = man
 	if (man === 0n) {
-		dst.str = '0'
+		dst.len = 1n
 		dst.exp = 0n
 	} else {
-		dst.str = '1'
+		dst.len = 1n
 		dst.exp = 0n
 	}
 }
@@ -45,7 +45,7 @@ const sign = (x) => ec.sign(x) ?? _sign(x)
 
 const _absTo = (dst, x) => {
 	dst.man = I._abs(x.man)
-	dst.str = x.str
+	dst.len = x.len
 	dst.exp = x.exp
 }
 const _abs = (x) => {
@@ -57,7 +57,7 @@ const abs = (x) => ec.abs(x) ?? _abs(x)
 
 const _negTo = (dst, x) => {
 	dst.man = -x.man
-	dst.str = x.str
+	dst.len = x.len
 	dst.exp = x.exp
 }
 const _neg = (x) => {
@@ -70,12 +70,12 @@ const neg = (x) => ec.neg(x) ?? _neg(x)
 const _addTo = (dst, a, b) => {
 	let man
 	let exp
-	const diff = a.exp - b.exp
-	if (diff > 0n) {
-		man = a.man * 10n ** diff + b.man
+	const shifts = a.exp - b.exp
+	if (shifts > 0n) {
+		man = a.man * 10n ** shifts + b.man
 		exp = b.exp
-	} else if (diff < 0n) {
-		man = a.man + b.man * 10n ** -diff
+	} else if (shifts < 0n) {
+		man = a.man + b.man * 10n ** -shifts
 		exp = a.exp
 	} else {
 		man = a.man + b.man
@@ -93,12 +93,12 @@ const add = (a, b) => ec.add(a, b) ?? _add(a, b)
 const _subTo = (dst, a, b) => {
 	let man
 	let exp
-	const diff = a.exp - b.exp
-	if (diff > 0n) {
-		man = a.man * 10n ** diff - b.man
+	const shifts = a.exp - b.exp
+	if (shifts > 0n) {
+		man = a.man * 10n ** shifts - b.man
 		exp = b.exp
-	} else if (diff < 0n) {
-		man = a.man - b.man * 10n ** -diff
+	} else if (shifts < 0n) {
+		man = a.man - b.man * 10n ** -shifts
 		exp = a.exp
 	} else {
 		man = a.man - b.man
@@ -125,6 +125,7 @@ const _mul = (a, b) => {
 }
 const mul = (a, b) => ec.mul(a, b) ?? _mul(a, b)
 
+// TODO: not so simple - needs precision
 const _divTo = (dst, a, b) => {
 	const man = a.man / b.man
 	const exp = a.exp - b.exp
@@ -171,7 +172,7 @@ const _floorTo = (dst, x) => {
 	}
 
 	let whole = _toInteger(x)
-	if (x.man < 0n) { whole-- }
+	if (x.man < 0n && x.exp < 0n) { whole-- }
 	_fromIntegerTo(dst, whole)
 }
 const _floor = (x) => {
@@ -188,7 +189,7 @@ const _ceilTo = (dst, x) => {
 	}
 
 	let whole = _toInteger(x)
-	if (x.man > 0n) { whole++ }
+	if (x.man > 0n && x.exp < 0n) { whole++ }
 	_fromIntegerTo(dst, whole)
 }
 const _ceil = (x) => {
@@ -204,10 +205,11 @@ const _roundTo = (dst, x) => {
 		return
 	}
 
-	const doubleWhole = x.exp > -x.str.length
+	const signedOne = I._sign(x.man)
+	const doubleWhole = x.exp > -x.len
 		? (2n * x.man) / 10n ** -x.exp
 		: 0n
-	_fromIntegerTo(dst, (doubleWhole + 1n) / 2n)
+	_fromIntegerTo(dst, (doubleWhole + signedOne) / 2n)
 }
 const _round = (x) => {
 	const res = {}
@@ -228,14 +230,14 @@ const _int = (x) => {
 const int = (x) => ec.int(x) ?? _int(x)
 
 const _fracTo = (dst, x) => {
-	if (x.exp >= 0) {
-		dst.man = 0
-		dst.str = '0'
+	if (x.exp >= 0n) {
+		dst.man = 0n
+		dst.len = 1n
 		dst.exp = 0n
 		return
 	}
 
-	if (x.exp <= -x.str.length) {
+	if (x.exp <= -x.len) {
 		_copy(dst, x)
 		return
 	}
@@ -251,7 +253,7 @@ const _frac = (x) => {
 const frac = (x) => ec.frac(x) ?? _frac(x)
 
 const _eq = (a, b) => true
-  && a.man === b.man
+	&& a.man === b.man
 	&& a.exp === b.exp
 const eq = (a, b) => ec.eq(a, b) ?? _eq(a, b)
 
@@ -263,8 +265,8 @@ const neq = (a, b) => !eq(a, b)
 const _lt = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
-	const aScale = a.exp - a.str.length
-	const bScale = b.exp - b.str.length
+	const aScale = a.exp - a.len
+	const bScale = b.exp - b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
 	return a.man < b.man
@@ -274,8 +276,8 @@ const lt = (a, b) => ec.lt(a, b) ?? _lt(a, b)
 const _gt = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
-	const aScale = a.exp - a.str.length
-	const bScale = b.exp - b.str.length
+	const aScale = a.exp - a.len
+	const bScale = b.exp - b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
 	return a.man > b.man
@@ -285,8 +287,8 @@ const gt = (a, b) => lt(b, a)
 const _lte = (a, b) => {
 	if (a.man < 0n && b.man >= 0n) { return true }
 	if (a.man >= 0n && b.man < 0n) { return false }
-	const aScale = a.exp - a.str.length
-	const bScale = b.exp - b.str.length
+	const aScale = a.exp - a.len
+	const bScale = b.exp - b.len
 	if (aScale < bScale) { return true }
 	if (aScale > bScale) { return false }
 	return a.man <= b.man
@@ -296,8 +298,8 @@ const lte = (a, b) => ec.lte(a, b) ?? _lte(a, b)
 const _gte = (a, b) => {
 	if (a.man >= 0n && b.man < 0n) { return true }
 	if (a.man < 0n && b.man >= 0n) { return false }
-	const aScale = a.exp - a.str.length
-	const bScale = b.exp - b.str.length
+	const aScale = a.exp - a.len
+	const bScale = b.exp - b.len
 	if (aScale > bScale) { return true }
 	if (aScale < bScale) { return false }
 	return a.man >= b.man
@@ -307,7 +309,7 @@ const gte = (a, b) => lte(b, a)
 const _minTo = (dst, a, b) => {
 	const m = lte(a, b) ? a : b
 	dst.man = m.man
-	dst.str = m.str
+	dst.len = m.len
 	dst.exp = m.exp
 }
 const _min = (a, b) => {
@@ -320,7 +322,7 @@ const min = (a, b) => ec.min(a, b) ?? _min(a, b)
 const _maxTo = (dst, a, b) => {
 	const m = gte(a, b) ? a : b
 	dst.man = m.man
-	dst.str = m.str
+	dst.len = m.len
 	dst.exp = m.exp
 }
 const _max = (a, b) => {
@@ -333,12 +335,16 @@ const max = (a, b) => ec.max(a, b) ?? _max(a, b)
 const _fromScientificTo = (dst, _man, _exp) => {
 	let man = _man
 	let exp = _exp
-	while ((man % 10n) === 0n) {
-		man /= 10n
-		exp -= 1n
+	if (man === 0n) {
+		exp = 0n
+	} else {
+		while ((man % 10n) === 0n) {
+			man /= 10n
+			exp += 1n
+		}
 	}
 	dst.man = man
-	dst.str = I._abs(man).toString()
+	dst.len = BigInt(I._abs(man).toString().length)
 	dst.exp = exp
 }
 const _fromScientific = (man, exp) => {
@@ -346,14 +352,10 @@ const _fromScientific = (man, exp) => {
 	_fromScientificTo(res, man, exp)
 	return res
 }
-const fromScientific = (man, exp) => ec.fromScientific(man, exp)
+const fromScientific = (man, exp) => ec.fromScientific(man, exp, I)
 	?? _fromScientific(man, exp)
 
-const _fromIntegerTo = (dst, i) => {
-	dst.man = i
-	dst.str = i.toString()
-	dst.exp = dst.str.length
-}
+const _fromIntegerTo = (dst, i) => _fromScientificTo(dst, i, 0n)
 const _fromInteger = (i) => {
 	const res = {}
 	_fromIntegerTo(res, i)
@@ -362,8 +364,9 @@ const _fromInteger = (i) => {
 const fromInteger = (i) => ec.fromInteger(i, I) ?? _fromInteger(i)
 
 const _toInteger = (x) => {
-	if (x.exp >= 0n) { return x.man }
-	if (x.exp <= -x.str.length) { return 0n }
+	if (x.exp === 0n) { return x.man }
+	if (x.exp > 0n) { return x.man * 10n ** x.exp }
+	if (x.exp <= -x.len) { return 0n }
 	return x.man / 10n ** -x.exp
 }
 const toInteger = (x) => ec.toInteger(x, I) ?? _toInteger(x)
@@ -402,7 +405,7 @@ const fromString = (s) => {
 	const x = ec.fromString(s)
 	if (x !== undefined) { return x }
 
-	const match = s.match(/^(?<sman>-?\d+)e(?<sexp>[-+]?\d+)$/u)
+	const match = s.match(/^(?<sman>[-+]?\d+)e(?<sexp>[-+]?\d+)$/u)
 	if (!match) { return NAN }
 
 	const { sman, sexp } = match.groups
@@ -411,7 +414,7 @@ const fromString = (s) => {
 	return fromScientific(man, exp)
 }
 
-const _toString = (x) => `${x.man < 0n ? '-' : ''}${x.str}e${x.exp}`
+const _toString = (x) => `${x.man < 0n ? '-' : ''}${x.man}e${x.exp}`
 const toString = (x) => ec.toString(x) ?? _toString(x)
 
 const from = (x, y) => {
@@ -423,7 +426,7 @@ const from = (x, y) => {
 	return NAN
 }
 
-const Domain = {
+const Algebra = {
 	...{ PInfinity: P_INFINITY, NInfinity: N_INFINITY, NaN: NAN },
 	...{ isMember, _isMember },
 	...{ sign, _sign, _signTo },
@@ -451,19 +454,19 @@ const Domain = {
 	...{ fromString, _fromString, _fromStringTo },
 	...{ toInteger, _toInteger },
 	...{ fromInteger, _fromInteger, _fromIntegerTo },
+	...{ fromScientific, _fromScientific, _fromScientificTo },
 	...{ from },
 	...{ _copy, _clone },
 }
 
-const { defineFor: defineEdgeCasesFor } = require('../edge-cases')
-const ec = defineEdgeCasesFor(Domain)
+const ec = require('../../edge-cases').defineFor(Algebra)
 
 module.exports = {
 	__info: {
-		name: 'decimal',
+		name: 'decimal-base-10',
 		isPrimitive: false,
 	},
-	...Domain,
+	...Algebra,
 	isFinite: ec.isFinite,
 	isNaN: ec.isNaN,
 }
