@@ -1,10 +1,10 @@
 {
-  "version": "0.0.4",
+  "version": "0.0.5",
   "name": "@kmamal/numbers",
   "description": "numbers",
   "repository": {
     "type": "git",
-    "url": "git@github.com:kmamal/numbers.git"
+    "url": "git+ssh://git@github.com:kmamal/numbers.git"
   },
   "license": "MIT",
   "scripts": {

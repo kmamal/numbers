@@ -88,9 +88,9 @@ const frac = (x) => {
 }
 
 const eq = (a, b) => true
-  && !isNaN(a)
-  && !isNaN(b)
-  && a.man === b.man
+	&& !isNaN(a)
+	&& !isNaN(b)
+	&& a.man === b.man
 	&& a.exp === b.exp
 
 const neq = (a, b) => !eq(a, b)
@@ -201,7 +201,7 @@ const toString = (x) => {
 
 module.exports = {
 	__info: {
-		name: 'decimal',
+		name: 'decimal-base-2',
 		isPrimitive: false,
 	},
 	...{ PInfinity: P_INFINITY, NInfinity: N_INFINITY, NaN: NAN },

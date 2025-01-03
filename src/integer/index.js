@@ -79,7 +79,7 @@ const from = (x) => {
 }
 
 
-const Domain = {
+const Algebra = {
 	...{ PInfinity: P_INFINITY, NInfinity: N_INFINITY, NaN: NAN },
 	...{ _isMember, isMember },
 	...{ _sign, _abs, _neg, _add, _sub, _mul, _div, _mod, _pow, _square },
@@ -93,15 +93,14 @@ const Domain = {
 	...{ from },
 }
 
-const { defineFor: defineEdgeCasesFor } = require('../edge-cases')
-const ec = defineEdgeCasesFor(Domain)
+const ec = require('../edge-cases').defineFor(Algebra)
 
 module.exports = {
 	__info: {
 		name: 'integer',
 		isPrimitive: true,
 	},
-	...Domain,
+	...Algebra,
 	isFinite: ec.isFinite,
 	isNaN: ec.isNaN,
 	edgeCases: ec,

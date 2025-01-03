@@ -1,6 +1,5 @@
 const I = require('../integer')
-const { defineFor } = require('@kmamal/math/gcd')
-const gcd = defineFor(I)
+const gcd = require('@kmamal/math/gcd').defineFor(I)
 const Float = require('@kmamal/util/ieee-float/double')
 
 const TWO_POW_53 = 2 ** 53
@@ -218,7 +217,7 @@ const roundTo = (x, bits) => {
 }
 
 const _eq = (a, b) => true
-  && a.num === b.num
+	&& a.num === b.num
 	&& a.den === b.den
 const eq = (a, b) => ec.eq(a, b) ?? _eq(a, b)
 
@@ -391,7 +390,7 @@ const from = (x, y) => {
 }
 
 
-const Domain = {
+const Algebra = {
 	...{ PInfinity: P_INFINITY, NInfinity: N_INFINITY, NaN: NAN },
 	...{ isMember, _isMember },
 	...{ sign, _sign, _signTo },
@@ -425,11 +424,10 @@ const Domain = {
 	...{ _copy, _clone },
 }
 
-const { defineFor: defineEdgeCasesFor } = require('../edge-cases')
-const ec = defineEdgeCasesFor(Domain)
+const ec = require('../edge-cases').defineFor(Algebra)
 
 module.exports = {
-	...Domain,
+	...Algebra,
 	isFinite: ec.isFinite,
 	isNaN: ec.isNaN,
 }

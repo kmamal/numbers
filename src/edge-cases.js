@@ -84,13 +84,13 @@ const defineFor = memoize((D) => {
 				&& (a === P_INFINITY || a === N_INFINITY)
 				&& (b === P_INFINITY || b === N_INFINITY)
 			)
-			|| (a === ZERO && b === ZERO)
+			|| (D.eq(a, ZERO) && D.eq(b, ZERO))
 		) { return NAN }
 		if (a === P_INFINITY || a === N_INFINITY) {
 			return _getSignedInfinity(sign(a) * D.sign(b))
 		}
 		if (b === P_INFINITY || b === N_INFINITY) { return ZERO }
-		if (b === ZERO) { return _getSignedInfinity(D._sign(a)) }
+		if (D._eq(b, ZERO)) { return _getSignedInfinity(D._sign(a)) }
 	}
 
 	const mod = (a, b) => {
@@ -101,7 +101,7 @@ const defineFor = memoize((D) => {
 			|| a === N_INFINITY
 			|| b === P_INFINITY
 			|| b === N_INFINITY
-			|| b === ZERO
+			|| D._eq(b, ZERO)
 		) { return NAN }
 	}
 
@@ -113,7 +113,7 @@ const defineFor = memoize((D) => {
 
 	const pow = (a, b) => {
 		if (b === NAN) { return NAN }
-		if (b === ZERO) { return ONE }
+		if (D.eq(b, ZERO)) { return ONE }
 
 		if (a === NAN) { return NAN }
 
@@ -238,7 +238,13 @@ const defineFor = memoize((D) => {
 		if (x === NAN) { return I.NaN }
 	}
 
-	const fromFraction = (num, den, I) => I.edgeCases.div(num, den)
+	const fromFraction = (num, den, I) => fromInteger(I.edgeCases.div(num, den))
+
+	const fromScientific = (man, exp, I) => {
+		const first = I.edgeCases.pow(10n, exp) ?? 10n
+		const second = I.edgeCases.mul(man, first)
+		return second === undefined ? second : D.fromInteger(second)
+	}
 
 	return {
 		...{ isNaN, isFinite },
@@ -251,6 +257,7 @@ const defineFor = memoize((D) => {
 		...{ fromNumber, toNumber },
 		...{ fromInteger, toInteger },
 		...{ fromFraction },
+		...{ fromScientific },
 	}
 })
 
