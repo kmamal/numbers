@@ -437,7 +437,7 @@ const fromString = (s) => {
 	return fromScientific(man, exp)
 }
 
-const _toString = (x) => `${x.man < 0n ? '-' : ''}${x.man}e${x.exp}`
+const _toString = (x) => `${x.man}e${x.exp}`
 const toString = (x) => ec.toString(x) ?? _toString(x)
 
 const from = (x, y) => {
