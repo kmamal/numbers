@@ -263,66 +263,134 @@ const _neq = (a, b) => false
 const neq = (a, b) => ec.neq(a, b) ?? _neq(a, b)
 
 const _lt = (a, b) => {
-	if (a.man < 0n && b.man >= 0n) { return true }
-	if (a.man >= 0n && b.man < 0n) { return false }
-	if (a.man === 0n && b.man > 0n) { return true }
-	if (b.man === 0n && a.man > 0n) { return false }
-	const aScale = a.exp + a.len
-	const bScale = b.exp + b.len
-	if (aScale < bScale) { return true }
-	if (aScale > bScale) { return false }
-	const shifts = a.exp - b.exp
-	return shifts > 0n
-		? a.man * 10n ** shifts < b.man
-		: a.man < b.man * 10n ** -shifts
+	const isNegA = a.man < 0n
+	const isNegB = b.man < 0n
+	if (isNegA && !isNegB) { return true }
+	if (!isNegA && isNegB) { return false }
+
+	const isZeroA = a.man === 0n
+	const isZeroB = b.man === 0n
+	if (isZeroA) { return !isNegB && !isZeroB }
+	if (isZeroB) { return isNegA }
+
+	let res
+	compare: {
+		const aScale = a.exp + a.len
+		const bScale = b.exp + b.len
+		if (aScale < bScale) {
+			res = true
+			break compare
+		}
+		if (aScale > bScale) {
+			res = false
+			break compare
+		}
+		const shifts = a.exp - b.exp
+		res = shifts > 0n
+			? a.man * 10n ** shifts < b.man
+			: a.man < b.man * 10n ** -shifts
+	}
+	if (isNegA) { res = !res }
+	return res
 }
 const lt = (a, b) => ec.lt(a, b) ?? _lt(a, b)
 
 const _gt = (a, b) => {
-	if (a.man >= 0n && b.man < 0n) { return true }
-	if (a.man < 0n && b.man >= 0n) { return false }
-	if (a.man === 0n && b.man > 0n) { return false }
-	if (b.man === 0n && a.man > 0n) { return true }
-	const aScale = a.exp + a.len
-	const bScale = b.exp + b.len
-	if (aScale > bScale) { return true }
-	if (aScale < bScale) { return false }
-	const shifts = a.exp - b.exp
-	return shifts > 0n
-		? a.man * 10n ** shifts > b.man
-		: a.man > b.man * 10n ** -shifts
+	const isNegA = a.man < 0n
+	const isNegB = b.man < 0n
+	if (isNegA && !isNegB) { return false }
+	if (!isNegA && isNegB) { return true }
+
+	const isZeroA = a.man === 0n
+	const isZeroB = b.man === 0n
+	if (isZeroA) { return isNegB }
+	if (isZeroB) { return !isNegA && !isZeroA }
+
+	let res
+	compare: {
+		const aScale = a.exp + a.len
+		const bScale = b.exp + b.len
+		if (aScale < bScale) {
+			res = false
+			break compare
+		}
+		if (aScale > bScale) {
+			res = true
+			break compare
+		}
+		const shifts = a.exp - b.exp
+		res = shifts > 0n
+			? a.man * 10n ** shifts > b.man
+			: a.man > b.man * 10n ** -shifts
+	}
+	if (isNegA) { res = !res }
+	return res
 }
 const gt = (a, b) => ec.gt(a, b) ?? _gt(a, b)
 
 const _lte = (a, b) => {
-	if (a.man < 0n && b.man >= 0n) { return true }
-	if (a.man >= 0n && b.man < 0n) { return false }
-	if (a.man === 0n) { return true }
-	if (b.man === 0n) { return false }
-	const aScale = a.exp + a.len
-	const bScale = b.exp + b.len
-	if (aScale < bScale) { return true }
-	if (aScale > bScale) { return false }
-	const shifts = a.exp - b.exp
-	return shifts > 0n
-		? a.man * 10n ** shifts <= b.man
-		: a.man <= b.man * 10n ** -shifts
+	const isNegA = a.man < 0n
+	const isNegB = b.man < 0n
+	if (isNegA && !isNegB) { return true }
+	if (!isNegA && isNegB) { return false }
+
+	const isZeroA = a.man === 0n
+	const isZeroB = b.man === 0n
+	if (isZeroA) { return !isNegB }
+	if (isZeroB) { return !isNegA }
+
+	let res
+	compare: {
+		const aScale = a.exp + a.len
+		const bScale = b.exp + b.len
+		if (aScale < bScale) {
+			res = true
+			break compare
+		}
+		if (aScale > bScale) {
+			res = false
+			break compare
+		}
+		const shifts = a.exp - b.exp
+		res = shifts > 0n
+			? a.man * 10n ** shifts <= b.man
+			: a.man <= b.man * 10n ** -shifts
+	}
+	if (isNegA) { res = !res }
+	return res
 }
 const lte = (a, b) => ec.lte(a, b) ?? _lte(a, b)
 
 const _gte = (a, b) => {
-	if (a.man >= 0n && b.man < 0n) { return true }
-	if (a.man < 0n && b.man >= 0n) { return false }
-	if (a.man === 0n) { return false }
-	if (b.man === 0n) { return true }
-	const aScale = a.exp + a.len
-	const bScale = b.exp + b.len
-	if (aScale > bScale) { return true }
-	if (aScale < bScale) { return false }
-	const shifts = a.exp - b.exp
-	return shifts > 0n
-		? a.man * 10n ** shifts >= b.man
-		: a.man >= b.man * 10n ** -shifts
+	const isNegA = a.man < 0n
+	const isNegB = b.man < 0n
+	if (isNegA && !isNegB) { return false }
+	if (!isNegA && isNegB) { return true }
+
+	const isZeroA = a.man === 0n
+	const isZeroB = b.man === 0n
+	if (isZeroA) { return isNegB }
+	if (isZeroB) { return isNegA }
+
+	let res
+	compare: {
+		const aScale = a.exp + a.len
+		const bScale = b.exp + b.len
+		if (aScale < bScale) {
+			res = false
+			break compare
+		}
+		if (aScale > bScale) {
+			res = true
+			break compare
+		}
+		const shifts = a.exp - b.exp
+		res = shifts > 0n
+			? a.man * 10n ** shifts >= b.man
+			: a.man >= b.man * 10n ** -shifts
+	}
+	if (isNegA) { res = !res }
+	return res
 }
 const gte = (a, b) => ec.gte(a, b) ?? _gte(a, b)
 
