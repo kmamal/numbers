@@ -385,11 +385,18 @@ const _toNumber = (x) => {
 const toNumber = (x) => ec.toNumber(x) ?? _toNumber(x)
 
 const _fromStringTo = (dst, s) => {
-	const e = s.indexOf('e')
-	const sman = s.slice(0, e)
-	const sexp = s.slice(e + 1)
-	const man = BigInt(sman)
-	const exp = BigInt(sexp)
+	const eIndex = s.indexOf('e')
+	const manStr = s.slice(0, eIndex)
+	const expStr = s.slice(eIndex + 1)
+
+	let dotIndex = manStr.indexOf('.')
+	if (dotIndex === -1) { dotIndex = manStr.length }
+	const manStrWhole = manStr.slice(0, dotIndex)
+	const manStrFrac = manStr.slice(dotIndex + 1)
+
+	const shift = BigInt(manStrFrac.length)
+	const man = BigInt(manStrWhole) * 10n ** shift + BigInt(manStrFrac)
+	const exp = BigInt(expStr) - shift
 	_fromScientificTo(dst, man, exp)
 }
 const _fromString = (s) => {
